@@ -390,11 +390,6 @@ public:
     zerarEfeitos();
   }
 };
-/*
-********************************
-#define FelipeLilli Owner (kekw)
-********************************
-*/
 enum estado
 {
   perdeu = -1,
