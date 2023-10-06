@@ -1,9 +1,10 @@
 #include <cstdlib>
 #include <iostream>
-#define MAXPRS 20
+#define MAXPRS 30 // criei com 20
 #define EFTMAX 5
-#define tamanhoDoTorneio 16
-#define totalDeClasse 3
+#define tamanhoDoTorneio 16 // pode ser impar, mas deixar par
+#define totalDeClasse 3     // atualizar de acordo com quantidade de classes criadas, funciona na hora de dar uma classe a um personagem delcarado sem nenhuma
+
 int potencia(int n, int p)
 {
   if (p == 0)
@@ -219,7 +220,8 @@ public:
     {
       dano = this->getAtaqueNormal(oponente, dado);
       this->adicionaDanoEfetuado(dano);
-      if (dano < 0){
+      if (dano < 0)
+      {
         dano = 0;
       }
       return dano;
@@ -229,7 +231,8 @@ public:
       dano = this->getAtaqueEspecial(oponente, dado);
       this->adicionaQntEsp();
       this->adicionaDanoEfetuado(dano);
-       if (dano < 0){
+      if (dano < 0)
+      {
         dano = 0;
       }
       return dano;
@@ -418,12 +421,12 @@ public:
   int declaraVitoria(Personagem *vencedor, Personagem *p2)
   {
     vencedor->setDerrotados(p2);
-    vencedores[vencedor->getId()] = vencendo;
+    vencedores[histId[vencedor->getId()]] = vencendo;
     vencedor->fullHeal();
     vencedor->zerarEfeitos();
-    vencedores[p2->getId()] = perdeu;
+    vencedores[histId[p2->getId()]] = perdeu;
     qntPersonagensDerrotados += 1;
-    return vencedor->getId();
+    return histId[vencedor->getId()];
   }
   int verificaVitoria(Personagem *p1, Personagem *p2, int turnoAtual)
   {
@@ -489,7 +492,7 @@ public:
           p2->mostrar();
           turno(p1, p2);
           getchar();
-          system("cls");
+          // system("cls");
         }
         else
         {
@@ -506,7 +509,7 @@ public:
           p2->mostrar();
           turno(p2, p1);
           getchar();
-          system("cls");
+          // system("cls");
         }
         else
         {
@@ -523,7 +526,7 @@ public:
     p1->mostrar();
     p2->mostrar();
     getchar();
-    system("cls");
+    // system("clear");
     return idVencedor;
   }
   void inicia()
@@ -580,37 +583,38 @@ public:
   }
   void distribuiPersonagens(Personagem *todosOsPers[])
   {
-    // int idNovo = 0;
-    // bool podeAdicionar = true;
-    // int histTemp[tamanhoDoTorneio] = {-1};
-    // while (idNovo < tamanhoDoTorneio)
-    // {
-    //   if(todosOsPers[idNovo]){
-    //   int idAntigo = (rand() % tamanhoDoTorneio);
-    //   for (int a = 0; a <= idNovo; a++)
-    //   {
-    //     if (idAntigo == histTemp[a])
-    //     {
-    //       idNovo--;
-    //       podeAdicionar = false;
-    //       break;
-    //     }
-    //   }
-    //   if (podeAdicionar)
-    //   {
-    //     this->personagensDoTorneio[idNovo] = todosOsPers[idAntigo];
-    //     std::cout << idAntigo << std::endl;
-    //     histTemp[idNovo] = idAntigo;
-    //     histId[idAntigo] = idNovo;
-    //     idNovo++;
-    //       }
-    //   podeAdicionar = true;
-    //   }
-    // }
-    for (int i = 0; i < tamanhoDoTorneio; i++)
+    int idNovo = 0;
+    bool podeAdicionar = true;
+    int histTemp[tamanhoDoTorneio] = {-1};
+    while (idNovo < tamanhoDoTorneio)
     {
-      this->personagensDoTorneio[i] = todosOsPers[i];
+      if (todosOsPers[idNovo])
+      {
+        int idAntigo = (rand() % tamanhoDoTorneio);
+        for (int a = 0; a <= idNovo; a++)
+        {
+          if (idAntigo == histTemp[a])
+          {
+            idNovo--;
+            podeAdicionar = false;
+            break;
+          }
+        }
+        if (podeAdicionar)
+        {
+          this->personagensDoTorneio[idNovo] = todosOsPers[idAntigo];
+          std::cout << idAntigo << std::endl;
+          histTemp[idNovo] = idAntigo;
+          histId[idAntigo] = idNovo;
+          idNovo++;
+        }
+        podeAdicionar = true;
+      }
     }
+    // for (int i = 0; i < tamanhoDoTorneio; i++)
+    // {
+    //   this->personagensDoTorneio[i] = todosOsPers[i];
+    // }
   }
   Torneio(Personagem *todosOsPers[], bool resumida)
   {
