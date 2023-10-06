@@ -579,18 +579,41 @@ public:
   void distribuiPersonagens(Personagem *todosOsPers[])
   {
     int idNovo = 0;
+    int idAntigo = 0;
     bool podeAdicionar = true;
+    bool diminui = true;
     int histTemp[tamanhoDoTorneio] = {-1};
     while (idNovo < tamanhoDoTorneio)
     {
       if (todosOsPers[idNovo])
       {
-        int idAntigo = (rand() % tamanhoDoTorneio);
+        if (podeAdicionar)
+        {
+          idAntigo = (rand() % tamanhoDoTorneio);
+        }
         for (int a = 0; a <= idNovo; a++)
         {
           if (idAntigo == histTemp[a])
           {
-            idNovo--;
+            if (diminui)
+            {
+              idAntigo--;
+              if (idAntigo < 0)
+              {
+                diminui = false;
+              }
+              break;
+            }
+            else if (!diminui)
+            {
+              idAntigo++;
+              break;
+            }
+            std::cout << idAntigo << std::endl;
+            if (idAntigo >= tamanhoDoTorneio)
+            {
+              podeAdicionar = true;
+            }
             podeAdicionar = false;
             break;
           }
@@ -726,6 +749,15 @@ public:
       i++;
     }
   }
+  void mostraNomes()
+  {
+    int i = 0;
+    while (pQ[i] != nullptr)
+    {
+      std::cout << pQ[i]->getId() << ". " << pQ[i]->getNome() << std::endl;
+      i++;
+    }
+  }
 
   void mostraDerrotados()
   {
@@ -762,40 +794,99 @@ public:
   {
     Torneio t = Torneio(pQ, resumida);
   }
+  void deletaPersonagem(int id)
+  {
+      for (int a = 0; a < pQ[id]->getIndexDerrotados(); a++)
+      {
+        delete (pQ[id]->getDerrotados(a));
+      }
+      delete (pQ[id]);
+      for (int a = id; a < indexPers - 1; a++){
+        pQ[a] = pQ[a++];
+        pQ[a]->setId(pQ[a++]->getId());
+      }
+      indexPers--;
+  }
   void deletaPonteiros()
   {
     for (int i = 0; i < indexPers; i++)
     {
+      for (int a = 0; a < pQ[i]->getIndexDerrotados(); a++)
+      {
+        delete (pQ[i]->getDerrotados(a));
+      }
       delete (pQ[i]);
     }
+  }
+  void menu()
+  {
+    int entrada;
+    std::string nome = "";
+    int classe = -1;
+    int idDeletar = -1;
+    bool sair = false;
+    while (!sair)
+    {
+    std::cout << "O que quer fazer?" << std::endl;
+    std::cout << "1. Iniciar Torneio " << std::endl;
+    std::cout << "2. Adicionar Personagem" << std::endl;
+    std::cout << "5. Sair" << std::endl;
+      std::cin >> entrada;
+
+      std::cout << std::endl;
+      switch (entrada)
+      {
+      case 1:
+        entrada = -1;
+        while (entrada < 0 || entrada > 1)
+        {
+          std::cout << "Luta resumida ou nao? (0 ou 1)" << std::endl;
+          std::cin >> entrada;
+        }
+        iniciaTorneio(entrada);
+        break;
+      case 2:
+        std::cout << "Qual o nome?" << std::endl;
+        std::cin >> nome;
+        while (classe < 0 || classe > totalDeClasse)
+        {
+          std::cout << "Qual a classe?" << std::endl
+                    << "0. Nenhuma" << std::endl
+                    << "1. Arcanista" << std::endl
+                    << "2. Monge" << std::endl
+                    << "3. Assassino " << std::endl;
+          std::cin >> classe;
+        }
+        adicionaPers(1, nome, classe);
+        std::cout << pQ[indexPers - 1]->getNome() << " Foi adicionado e pode aparecer no torneio!" << std::endl;
+        pQ[indexPers - 1]->mostrar();
+        break;
+      case 5:
+        sair = true;
+        break;
+      default:
+        break;
+      }
+    }
+  }
+  JogoRpg()
+  {
+    // adicionaPers(Quantidade, "Nome", Vida, Ataque, Defesa,AtributoDeClasse,classe)
+    adicionaPers(2, "Blossom", arcanista);
+    adicionaPers(2, "Blubbles", monge);
+    adicionaPers(2, "Buttercup", assassino);
+    adicionaPers(1, "Elemento X", rand() % totalDeClasse);
+    menu();
+    mostraDerrotados();
+    getchar();
+    mostraEstatistica();
+    getchar();
+    mostraPers();
+    deletaPonteiros();
   }
 };
 
 int main()
 {
   JogoRpg j = JogoRpg();
-
-  //  j.adicionaPers(Quantidade, "Nome", Vida, Ataque,
-  //  Defesa,AtributoDeClasse,classe)
-  // j.adicionaPers(2, "Trippo", 150, 30, 0, 0, padrao);
-  j.adicionaPers(2, "Brigadeiro", monge);
-  j.adicionaPers(2, "Sargento", assassino);
-  j.adicionaPers(3, "Beijinho", arcanista);
-  j.adicionaPers(3, "Blossom", arcanista);
-  j.adicionaPers(1, "Blubbles", monge);
-  j.adicionaPers(1, "Buttercup", assassino);
-  j.adicionaPers(1, "Lindinha", arcanista);
-  j.adicionaPers(1, "Florzinha", assassino);
-  j.adicionaPers(1, "Docinho", monge);
-  j.adicionaPers(1, "Elemento X");
-
-  j.iniciaTorneio(true);
-  // j.luta(j.getPers(0), j.getPers(1));
-  j.mostraDerrotados();
-  getchar();
-  j.mostraEstatistica();
-  getchar();
-  j.mostraPers();
-  getchar();
-  j.deletaPonteiros();
 }
