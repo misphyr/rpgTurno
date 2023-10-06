@@ -17,10 +17,10 @@ int potencia(int n, int p)
     return n * potencia(n, p - 1);
   }
 }
-bool veSeTem(int velhoOeste[], int procurado, int quantidade)
+bool veSeTem(int quantidade, int velhoOeste[], int tamanho, int procurado)
 {
   int contador = 0;
-  for (int cidade = 0; cidade < sizeof(velhoOeste); cidade++)
+  for (int cidade = 0; cidade < tamanho; cidade++)
   {
     if (procurado == velhoOeste[cidade])
     {
@@ -219,6 +219,9 @@ public:
     {
       dano = this->getAtaqueNormal(oponente, dado);
       this->adicionaDanoEfetuado(dano);
+      if (dano < 0){
+        dano = 0;
+      }
       return dano;
     }
     else
@@ -226,6 +229,9 @@ public:
       dano = this->getAtaqueEspecial(oponente, dado);
       this->adicionaQntEsp();
       this->adicionaDanoEfetuado(dano);
+       if (dano < 0){
+        dano = 0;
+      }
       return dano;
     }
   }
@@ -395,11 +401,10 @@ enum estado
 class Torneio
 {
 private:
-  Personagem *personagensDoTorneio[tamanhoDoTorneio];
-  int vencedores[tamanhoDoTorneio];
+  Personagem *personagensDoTorneio[tamanhoDoTorneio] = {nullptr};
+  int vencedores[tamanhoDoTorneio] = {0};
   int qntPersonagensDerrotados = 0;
-  int index;
-  int historicoId[tamanhoDoTorneio];
+  int histId[MAXPRS] = {0};
   bool resumida;
 
 public:
@@ -412,14 +417,11 @@ public:
   }
   int declaraVitoria(Personagem *vencedor, Personagem *p2)
   {
-    donoDoturnoDestacado(vencedor, p2);
-
     vencedor->setDerrotados(p2);
-
-    vencedores[historicoId[vencedor->getId()]] = vencendo;
+    vencedores[vencedor->getId()] = vencendo;
     vencedor->fullHeal();
     vencedor->zerarEfeitos();
-    vencedores[historicoId[p2->getId()]] = perdeu;
+    vencedores[p2->getId()] = perdeu;
     qntPersonagensDerrotados += 1;
     return vencedor->getId();
   }
@@ -446,26 +448,22 @@ public:
   }
   void turno(Personagem *atacante, Personagem *defensor)
   {
-    std::string cor;
-    if (atacante->getId() % 2 == 0)
-    {
-      cor = "\033[1;33m";
-    }
-    else
-    {
-      cor = "\033[1;27m";
-    }
+    std::string cor = (atacante->getId() % 2 == 0) ? "\033[1;33m" : "\033[1;27m";
     double danoDoTurno = atacante->DaDano(defensor);
+
     if (danoDoTurno < 0)
     {
       danoDoTurno = 0;
     }
+
     std::cout << "Nome = " << atacante->getNome()
               << " | Id = " << atacante->getId() << " | Estado = "
-              << vencedores[historicoId[atacante->getId()]] << std::endl;
+              << vencedores[atacante->getId()] << std::endl;
+
     std::cout << cor << atacante->getNome() << " deu \033[0m\033[1;31m"
               << danoDoTurno << "\033[0m" << cor << " de dano! \033[0m\n"
               << std::endl;
+
     defensor->setVida(defensor->getVida() - danoDoTurno);
     atacante->VeAVida();
     defensor->VeAVida();
@@ -530,52 +528,48 @@ public:
   }
   void inicia()
   {
-    int sub = 0;
+    int ultimoPers = 0;
     int idVencedor = -1;
-    bool t = false;
+    bool GuardaUm = false;
     for (int i = 0; i < tamanhoDoTorneio; i++)
     {
       vencedores[i] = lutando; // 0 = lutando
     }
-    // x < numeroDeAndares
     do
     {
-      for (int i = 0; i < tamanhoDoTorneio; i++)
+      int id = 0;
+      for (id = 0; id < tamanhoDoTorneio; id++)
       {
-        if (personagensDoTorneio[i] != nullptr &&
-            (vencedores[historicoId[personagensDoTorneio[i]
-                                        ->getId()]] == vencendo ||
-             vencedores[historicoId[personagensDoTorneio[i]
-                                        ->getId()]] == lutando) &&
-            i < index)
+        if (personagensDoTorneio[id])
         {
-          if (t)
+          if (vencedores[id] != perdeu)
           {
-            idVencedor = luta(personagensDoTorneio[i],
-                              personagensDoTorneio[sub]);
-
-            t = false;
-          }
-          else if (!t)
-          {
-            sub = i;
-            t = true;
+            if (GuardaUm)
+            {
+              idVencedor = luta(personagensDoTorneio[id],
+                                personagensDoTorneio[ultimoPers]);
+              GuardaUm = false;
+            }
+            else if (!GuardaUm)
+            {
+              ultimoPers = id;
+              GuardaUm = true;
+            }
           }
         }
       }
-    } while (veSeTem(vencedores, vencendo, 2));
+    } while (veSeTem(2, vencedores, (sizeof(vencedores) / sizeof(vencedores[0])), vencendo));
 
-    for (int y = 0; y < tamanhoDoTorneio; y++)
+    for (int id = 0; id < tamanhoDoTorneio; id++)
     {
-      if (personagensDoTorneio[y]->getId() == idVencedor)
+      if (id == idVencedor)
       {
         std::cout << "===================================" << std::endl
                   << "------------VENCEDOR---------------" << std::endl
                   << "-----------DO-TORNEIO--------------" << std::endl
                   << "-----------------------------------" << std::endl
                   << "->" << std::endl
-                  << "->" << personagensDoTorneio[y]->getNome()
-                  << std::endl
+                  << "->" << personagensDoTorneio[id]->getNome() << std::endl
                   << "->" << std::endl
                   << "-----------------------------------" << std::endl
                   << "===================================" << std::endl;
@@ -586,39 +580,41 @@ public:
   }
   void distribuiPersonagens(Personagem *todosOsPers[])
   {
-    int histId[tamanhoDoTorneio];
-    bool pode = true;
-    int i = 0;
-    while (i < tamanhoDoTorneio || todosOsPers[i] != nullptr)
+    // int idNovo = 0;
+    // bool podeAdicionar = true;
+    // int histTemp[tamanhoDoTorneio] = {-1};
+    // while (idNovo < tamanhoDoTorneio)
+    // {
+    //   if(todosOsPers[idNovo]){
+    //   int idAntigo = (rand() % tamanhoDoTorneio);
+    //   for (int a = 0; a <= idNovo; a++)
+    //   {
+    //     if (idAntigo == histTemp[a])
+    //     {
+    //       idNovo--;
+    //       podeAdicionar = false;
+    //       break;
+    //     }
+    //   }
+    //   if (podeAdicionar)
+    //   {
+    //     this->personagensDoTorneio[idNovo] = todosOsPers[idAntigo];
+    //     std::cout << idAntigo << std::endl;
+    //     histTemp[idNovo] = idAntigo;
+    //     histId[idAntigo] = idNovo;
+    //     idNovo++;
+    //       }
+    //   podeAdicionar = true;
+    //   }
+    // }
+    for (int i = 0; i < tamanhoDoTorneio; i++)
     {
-      int idAtual = (rand() % tamanhoDoTorneio);
-      for (int a = 0; a < i; a++)
-      {
-        if (idAtual == histId[a])
-        {
-          i--;
-          pode = false;
-          break;
-        }
-      }
-      if (pode)
-      {
-        this->personagensDoTorneio[i] = todosOsPers[idAtual];
-        std::cout << idAtual << std::endl;
-        histId[i] = idAtual;
-        this->historicoId[idAtual] = i;
-      }
-      pode = true;
-      i++;
+      this->personagensDoTorneio[i] = todosOsPers[i];
     }
-    /*for (int i = 0; i < tamanhoDoTorneio;i++) {
-       this->personagensDoTorneio[i] = todosOsPers[i];
-   }*/
   }
-  Torneio(Personagem *todosOsPers[], bool resumida, int indexPers)
+  Torneio(Personagem *todosOsPers[], bool resumida)
   {
     this->resumida = resumida;
-    this->index = indexPers;
     this->distribuiPersonagens(todosOsPers);
     this->inicia();
   }
@@ -634,7 +630,7 @@ enum classe
 class JogoRpg
 {
 private:
-  Personagem *pQ[MAXPRS];
+  Personagem *pQ[MAXPRS]{nullptr};
   int indexPers = 0;
 
 public:
@@ -673,15 +669,19 @@ public:
       switch (rand() % totalDeClasse)
       {
       case arcanista: // Classe(id,nome,vida,ataque,defesa,atributoEspecial)
-        pQ[this->indexPers] = new Arcanista(
-            indexPers, nomeSubstituto, (double)(rand() % 30), (double)(rand() % 30), (double)(rand() % 30), (double)(rand() % 30));
+        pQ[this->indexPers] = new Arcanista(indexPers, nomeSubstituto,
+                                            (double)(rand() % 30), (double)(rand() % 30),
+                                            (double)(rand() % 30), (double)(rand() % 30));
         break;
       case monge:
-        pQ[this->indexPers] =
-            new Monge(indexPers, nomeSubstituto, (double)(rand() % 30), (double)(rand() % 30), (double)(rand() % 30), (double)(rand() % 30));
+        pQ[this->indexPers] = new Monge(indexPers, nomeSubstituto,
+                                        (double)(rand() % 30), (double)(rand() % 30),
+                                        (double)(rand() % 30), (double)(rand() % 30));
         break;
       case assassino:
-        pQ[this->indexPers] = new Assassino(indexPers, nomeSubstituto, (double)(rand() % 30), (double)(rand() % 30), (double)(rand() % 30), (double)(rand() % 30));
+        pQ[this->indexPers] = new Assassino(indexPers, nomeSubstituto,
+                                            (double)(rand() % 30), (double)(rand() % 30),
+                                            (double)(rand() % 30), (double)(rand() % 30));
         break;
       }
       this->indexPers++;
@@ -697,10 +697,10 @@ public:
       switch (c)
       {
       case arcanista: // Classe(id,nome,vida,ataque,defesa,atributoEspecial)
-        pQ[this->indexPers] = new Arcanista(
-            indexPers, nomeSubstituto, (double)(rand() % 30),
-            (double)(rand() % 30), (double)(rand() % 30),
-            (double)(rand() % 30));
+        pQ[this->indexPers] =
+            new Arcanista(indexPers, nomeSubstituto,
+                          (double)(rand() % 30), (double)(rand() % 30),
+                          (double)(rand() % 30), (double)(rand() % 30));
         break;
       case monge:
         pQ[this->indexPers] =
@@ -709,10 +709,10 @@ public:
                       (double)(rand() % 30), (double)(rand() % 30));
         break;
       case assassino:
-        pQ[this->indexPers] = new Assassino(
-            indexPers, nomeSubstituto, (double)(rand() % 30),
-            (double)(rand() % 30), (double)(rand() % 30),
-            (double)(rand() % 30));
+        pQ[this->indexPers] =
+            new Assassino(indexPers, nomeSubstituto,
+                          (double)(rand() % 30), (double)(rand() % 30),
+                          (double)(rand() % 30), (double)(rand() % 30));
         break;
       }
       this->indexPers++;
@@ -733,16 +733,20 @@ public:
     int i = 0, posicao = 0;
     while (pQ[i] != nullptr)
     {
-      std::cout << pQ[i]->getNome() << "\033[1;31m Derrotou: \033[0m"
-                << std::endl;
-      while (posicao >= 0 && posicao < pQ[i]->getIndexDerrotados() &&
-             pQ[i]->getDerrotados(posicao) != nullptr)
+      if (pQ[i]->getDerrotados(0) != nullptr)
       {
-        std::cout << pQ[i]->getDerrotados(posicao)->getNome()
+        std::cout << pQ[i]->getNome() << "\033[1;31m Derrotou: \033[0m"
                   << std::endl;
-        posicao++;
+        while (posicao >= 0 && posicao < pQ[i]->getIndexDerrotados() &&
+               pQ[i]->getDerrotados(posicao) != nullptr)
+        {
+          std::cout << pQ[i]->getDerrotados(posicao)->getNome()
+                    << std::endl;
+          posicao++;
+        }
+        std::cout << std::endl;
+        posicao = 0;
       }
-      posicao = 0;
       i++;
     }
   }
@@ -757,7 +761,7 @@ public:
   }
   void iniciaTorneio(bool resumida)
   {
-    Torneio t = Torneio(pQ, resumida, indexPers);
+    Torneio t = Torneio(pQ, resumida);
   }
   void deletaPonteiros()
   {
@@ -775,22 +779,16 @@ int main()
   //  j.adicionaPers(Quantidade, "Nome", Vida, Ataque,
   //  Defesa,AtributoDeClasse,classe)
   // j.adicionaPers(2, "Trippo", 150, 30, 0, 0, padrao);
-  j.adicionaPers(1, "Brigadeiro", monge);
-  j.adicionaPers(1, "Negrinho", assassino);
-  j.adicionaPers(1, "Beijinho", arcanista);
-  j.adicionaPers(1, "Blossom", arcanista);
+  j.adicionaPers(2, "Brigadeiro", monge);
+  j.adicionaPers(2, "Sargento", assassino);
+  j.adicionaPers(3, "Beijinho", arcanista);
+  j.adicionaPers(3, "Blossom", arcanista);
   j.adicionaPers(1, "Blubbles", monge);
   j.adicionaPers(1, "Buttercup", assassino);
-  j.adicionaPers(1, "Florzinha", assassino);
   j.adicionaPers(1, "Lindinha", arcanista);
+  j.adicionaPers(1, "Florzinha", assassino);
   j.adicionaPers(1, "Docinho", monge);
   j.adicionaPers(1, "Elemento X");
-  j.adicionaPers(1, "Brigadeiro", monge);
-  j.adicionaPers(1, "Negrinho", assassino);
-  j.adicionaPers(1, "Beijinho", arcanista);
-  j.adicionaPers(1, "Beijinho", arcanista);
-  j.adicionaPers(1, "Blossom", arcanista);
-  j.adicionaPers(1, "Blossom", arcanista);
 
   j.iniciaTorneio(true);
   // j.luta(j.getPers(0), j.getPers(1));
