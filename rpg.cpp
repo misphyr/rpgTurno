@@ -7,886 +7,960 @@
 
 int potencia(int n, int p)
 {
-  if (p == 0)
-  {
-    return 1;
-  }
-  else
-  {
-    // (5,5) -> (5,4) -> (5,3) -> (5,2) -> (5,1) -> (5,0)
-    //   5   *    5   *    5   *    5    *   5    *   1 (p=0 -> 1) = 5^5
-    return n * potencia(n, p - 1);
-  }
+    if (p == 0)
+    {
+        return 1;
+    }
+    else
+    {
+        // (5,5) -> (5,4) -> (5,3) -> (5,2) -> (5,1) -> (5,0)
+        //   5   *    5   *    5   *    5    *   5    *   1 (p=0 -> 1) = 5^5
+        return n * potencia(n, p - 1);
+    }
 }
 bool veSeTem(int quantidade, int velhoOeste[], int tamanho, int procurado)
 {
-  int contador = 0;
-  for (int cidade = 0; cidade < tamanho; cidade++)
-  {
-    if (procurado == velhoOeste[cidade])
+    int contador = 0;
+    for (int cidade = 0; cidade < tamanho; cidade++)
     {
-      contador++;
+        if (procurado == velhoOeste[cidade])
+        {
+            contador++;
+        }
     }
-  }
-  if (contador >= quantidade)
-    return true;
-  else
-  {
-    return false;
-  }
+    if (contador >= quantidade)
+        return true;
+    else
+    {
+        return false;
+    }
 }
 std::string toString(int num)
 {
-  char str[15 + sizeof(char)];
-  sprintf_s(str, "%d", num);
-  return std::string(str);
+    char str[15 + sizeof(char)];
+    sprintf_s(str, "%d", num);
+    return std::string(str);
 }
 std::string letraNoDano(double dano)
 {
-  char str[15 + sizeof(char)];
-  if (dano >= 1000 && dano < 1000000)
-  {
-    dano = dano / 1000;
+    char str[15 + sizeof(char)];
+    if (dano >= 1000 && dano < 1000000)
+    {
+        dano = dano / 1000;
+        sprintf_s(str, "%.2f", dano);
+        return std::string(str) + ("K");
+    }
+    else if (dano >= 1000000 && dano < 1000000000)
+    {
+        dano = dano / 1000000;
+        sprintf_s(str, "%.2f", dano);
+        return std::string(str) + ("M");
+    }
     sprintf_s(str, "%.2f", dano);
-    return std::string(str) + ("K");
-  }
-  else if (dano >= 1000000 && dano < 1000000000)
-  {
-    dano = dano / 1000000;
-    sprintf_s(str, "%.2f", dano);
-    return std::string(str) + ("M");
-  }
-  sprintf_s(str, "%.2f", dano);
-  return str;
+    return str;
 }
 
 enum efeitos
 {
-  semEfeito = 0,
-  curaPassiva = 1,
-  sangramento = 2,
+    semEfeito = 0,
+    curaPassiva = 1,
+    sangramento = 2,
 
 };
 class Personagem
 {
 private:
-  std::string nome = "";
-  std::string classe = "Padrao";
-  std::string atkEsp = "";
-  int idPers;
-  int efeitos[EFTMAX][2];
-  double maxVida = 0;
-  double vida;
-  double atk;
-  double def;
-  double danoEfetuado = 0;
-  int qntTurno = 1;
-  int qntEsp = 0;
-  int indexDerrotados = 0;
-  Personagem *derrotados[20];
+    std::string nome = "";
+    std::string classe = "Padrao";
+    std::string atkEsp = "";
+    int idPers;
+    int efeitos[EFTMAX][2];
+    double maxVida = 0;
+    double vida;
+    double atk;
+    double def;
+    double danoEfetuado = 0;
+    int qntTurno = 1;
+    int qntEsp = 0;
+    int indexDerrotados = 0;
+    Personagem* derrotados[20];
 
 public:
-  // Get's
-  std::string getNome() { return this->nome; }
-  std::string getAtkEsp() { return this->atkEsp; }
-  std::string getClasse() { return this->classe; }
-  int getId() { return this->idPers; }
-  double getMaxVida() { return this->maxVida; }
-  double getVida() { return this->vida; }
-  double getAtk() { return this->atk; }
-  double getDef() { return this->def; }
-  double getDanoEfetuado() { return this->danoEfetuado; }
-  int getQntEsp() { return this->qntEsp; }
-  int getQntTurno() { return this->qntTurno; }
-  int getEfeitosDuracao(int posicao) { return this->efeitos[posicao][1]; }
-  int getIndexDerrotados() { return this->indexDerrotados; }
-  Personagem *getDerrotados(int posicao)
-  {
-    if (posicao < 0 || posicao > sizeof(this->derrotados) ||
-        this->derrotados[posicao] == nullptr)
+    // Get's
+    std::string getNome() { return this->nome; }
+    std::string getAtkEsp() { return this->atkEsp; }
+    std::string getClasse() { return this->classe; }
+    int getId() { return this->idPers; }
+    double getMaxVida() { return this->maxVida; }
+    double getVida() { return this->vida; }
+    double getAtk() { return this->atk; }
+    double getDef() { return this->def; }
+    double getDanoEfetuado() { return this->danoEfetuado; }
+    int getQntEsp() { return this->qntEsp; }
+    int getQntTurno() { return this->qntTurno; }
+    int getEfeitosDuracao(int posicao) { return this->efeitos[posicao][1]; }
+    int getIndexDerrotados() { return this->indexDerrotados; }
+    Personagem* getDerrotados(int posicao)
     {
-      return nullptr;
+        if (posicao < 0 || posicao > sizeof(this->derrotados) ||
+            this->derrotados[posicao] == nullptr)
+        {
+            return nullptr;
+        }
+        else
+        {
+            return this->derrotados[posicao];
+        }
     }
-    else
+    double getAtaqueNormal(Personagem* oponente, int dado)
     {
-      return this->derrotados[posicao];
-    }
-  }
-  double getAtaqueNormal(Personagem *oponente, int dado)
-  {
-    double dano;
-    std::cout << "Dado: " << dado << std::endl;
-    dano = getAtk() - oponente->getDef();
+        double dano;
+        std::cout << "Dado: " << dado << std::endl;
+        dano = getAtk() - oponente->getDef();
 
-    return dano;
-  }
-  virtual double getAtaqueEspecial(Personagem *oponente, int dado)
-  {
-    std::cout << "Dado: " << dado << " " << getAtkEsp() << std::endl;
-    return getAtk() * 1.5;
-  }
+        return dano;
+    }
+    virtual double getAtaqueEspecial(Personagem* oponente, int dado)
+    {
+        std::cout << "Dado: " << dado << " " << getAtkEsp() << std::endl;
+        return getAtk() * 1.5;
+    }
 
-  // Set's
-  void setNome(std::string nome) { this->nome = nome; }
-  void setAtkEsp(std::string atkEsp) { this->atkEsp = atkEsp; }
-  void setClasse(std::string classe) { this->classe = classe; }
-  void setId(int idPers) { this->idPers = idPers; }
-  void setMaxVida(double maxVida) { this->maxVida = maxVida; }
-  void setVida(double vida) { this->vida = vida; }
-  void setAtk(double atk) { this->atk = atk; }
-  void setDef(double def) { this->def = def; }
-  void setIndexDerrotados(int indexDerrotados) { this->indexDerrotados = indexDerrotados; }
-  void setDanoEfetuado(double danoEfetuado) { this->danoEfetuado = danoEfetuado; }
-  void setQntEsp(int qntEsp) { this->qntEsp = qntEsp; }
-  void setQntTurno(int qntTurno) { this->qntTurno = qntTurno; }
-  void setDerrotados(Personagem *d1)
-  {
-    this->derrotados[this->indexDerrotados] = d1;
-    this->indexDerrotados++;
-  }
-  void setEfeitos(int efeito, int posicao, int duracao)
-  {
-    this->efeitos[posicao][0] = efeito;
-    this->efeitos[posicao][1] = duracao;
-  }
-  void setEfeitosDuracao(int posicao, int duracao)
-  {
-    this->efeitos[posicao][1] = duracao;
-  }
-  void adicionaEfeito(int efeito, int duracao)
-  {
-    for (int i = 0; i <= EFTMAX; i++)
+    // Set's
+    void setNome(std::string nome) { this->nome = nome; }
+    void setAtkEsp(std::string atkEsp) { this->atkEsp = atkEsp; }
+    void setClasse(std::string classe) { this->classe = classe; }
+    void setId(int idPers) { this->idPers = idPers; }
+    void setMaxVida(double maxVida) { this->maxVida = maxVida; }
+    void setVida(double vida) { this->vida = vida; }
+    void setAtk(double atk) { this->atk = atk; }
+    void setDef(double def) { this->def = def; }
+    void setIndexDerrotados(int indexDerrotados) { this->indexDerrotados = indexDerrotados; }
+    void setDanoEfetuado(double danoEfetuado) { this->danoEfetuado = danoEfetuado; }
+    void setQntEsp(int qntEsp) { this->qntEsp = qntEsp; }
+    void setQntTurno(int qntTurno) { this->qntTurno = qntTurno; }
+    void setDerrotados(Personagem* d1)
     {
-      if (this->efeitos[i][0] == semEfeito)
-      {
-        setEfeitos(efeito, i, duracao);
-        break;
-      }
+        this->derrotados[this->indexDerrotados] = d1;
+        this->indexDerrotados++;
     }
-  }
-  void adicionaDanoEfetuado(double dano) { this->setDanoEfetuado(this->getDanoEfetuado() + dano); }
-  void adicionaQntEsp() { this->setQntEsp(this->getQntEsp() + 1); }
-  void adicionaTurno() { this->setQntTurno(this->getQntTurno() + 1); }
-  void fullHeal() { this->setVida(getMaxVida()); }
-  void VeAVida()
-  {
-    if (this->getVida() > this->getMaxVida())
+    void setEfeitos(int efeito, int posicao, int duracao)
     {
-      this->setVida(getMaxVida());
+        this->efeitos[posicao][0] = efeito;
+        this->efeitos[posicao][1] = duracao;
     }
-    else if (this->getVida() <= 0)
+    void setEfeitosDuracao(int posicao, int duracao)
     {
-      this->setVida(0);
+        this->efeitos[posicao][1] = duracao;
     }
-  }
-  void zerarEfeitos()
-  {
-    for (int i = 0; i <= EFTMAX; i++)
+    void adicionaEfeito(int efeito, int duracao)
     {
-      setEfeitos(semEfeito, i, -1);
+        for (int i = 0; i <= EFTMAX; i++)
+        {
+            if (this->efeitos[i][0] == semEfeito)
+            {
+                setEfeitos(efeito, i, duracao);
+                break;
+            }
+        }
     }
-  }
-  double DaDano(Personagem *oponente)
-  {
-    int dado;
-    double dano;
-    this->adicionaTurno();
+    void adicionaDanoEfetuado(double dano) { this->setDanoEfetuado(this->getDanoEfetuado() + dano); }
+    void adicionaQntEsp() { this->setQntEsp(this->getQntEsp() + 1); }
+    void adicionaTurno() { this->setQntTurno(this->getQntTurno() + 1); }
+    void fullHeal() { this->setVida(getMaxVida()); }
+    void VeAVida()
+    {
+        if (this->getVida() > this->getMaxVida())
+        {
+            this->setVida(getMaxVida());
+        }
+        else if (this->getVida() <= 0)
+        {
+            this->setVida(0);
+        }
+    }
+    void zerarEfeitos()
+    {
+        for (int i = 0; i <= EFTMAX; i++)
+        {
+            setEfeitos(semEfeito, i, -1);
+        }
+    }
+    double DaDano(Personagem* oponente)
+    {
+        int dado;
+        double dano;
+        this->adicionaTurno();
 
-    for (int i = 0; i <= EFTMAX; i++)
-      switch (this->efeitos[i][0])
-      {
-      case semEfeito:
-        break;
-      case curaPassiva:
-        setVida(getVida() + (getMaxVida() / 20));
-        setEfeitosDuracao(i, getEfeitosDuracao(i) - 1);
-        std::cout << this->getNome() << " se curou." << std::endl;
-        if (getEfeitosDuracao(i) == 0)
-          this->efeitos[i][0] = semEfeito;
-        break;
-      case sangramento:
-        setVida(getVida() - (oponente->getAtk() / 10));
-        setEfeitosDuracao(i, getEfeitosDuracao(i) - 1);
-        std::cout << this->getNome() << " esta sangrando."
-                  << std::endl
-                  << (oponente->getAtk() / 10) << " de vida perdida"
-                  << std::endl;
-        if (getEfeitosDuracao(i) == 0)
-          this->efeitos[i][0] = semEfeito;
-        break;
-      }
+        for (int i = 0; i <= EFTMAX; i++)
+            switch (this->efeitos[i][0])
+            {
+            case semEfeito:
+                break;
+            case curaPassiva:
+                setVida(getVida() + (getMaxVida() / 20));
+                setEfeitosDuracao(i, getEfeitosDuracao(i) - 1);
+                std::cout << this->getNome() << " se curou." << std::endl;
+                if (getEfeitosDuracao(i) == 0)
+                    this->efeitos[i][0] = semEfeito;
+                break;
+            case sangramento:
+                setVida(getVida() - (oponente->getAtk() / 10));
+                setEfeitosDuracao(i, getEfeitosDuracao(i) - 1);
+                std::cout << this->getNome() << " esta sangrando."
+                    << std::endl
+                    << (oponente->getAtk() / 10) << " de vida perdida"
+                    << std::endl;
+                if (getEfeitosDuracao(i) == 0)
+                    this->efeitos[i][0] = semEfeito;
+                break;
+            }
 
-    if ((dado = (rand() % 100)) > 5)
-    {
-      dano = this->getAtaqueNormal(oponente, dado);
-      this->adicionaDanoEfetuado(dano);
-      if (dano < 0)
-      {
-        dano = 0;
-      }
-      return dano;
+        if ((dado = (rand() % 100)) > 20)
+        {
+            dano = this->getAtaqueNormal(oponente, dado);
+            this->adicionaDanoEfetuado(dano);
+            if (dano < 0)
+            {
+                dano = 0;
+            }
+            return dano;
+        }
+        else
+        {
+            dano = this->getAtaqueEspecial(oponente, dado);
+            this->adicionaQntEsp();
+            this->adicionaDanoEfetuado(dano);
+            if (dano < 0)
+            {
+                dano = 0;
+            }
+            return dano;
+        }
     }
-    else
+    virtual void mostrar()
     {
-      dano = this->getAtaqueEspecial(oponente, dado);
-      this->adicionaQntEsp();
-      this->adicionaDanoEfetuado(dano);
-      if (dano < 0)
-      {
-        dano = 0;
-      }
-      return dano;
+        std::cout << "------------------------------------" << std::endl
+            << "Id:\t\t" << getId() << std::endl
+            << "Nome:\t\t" << getNome() << std::endl
+            << "Classe:\t\t" << getClasse() << std::endl
+            << "Vida:\t\t" << getVida() << "/" << getMaxVida()
+            << std::endl
+            << "Atk:\t\t" << letraNoDano(getAtk()) << std::endl
+            << "Def:\t\t" << getDef() << std::endl;
     }
-  }
-  virtual void mostrar()
-  {
-    std::cout << "------------------------------------" << std::endl
-              << "Id:\t\t" << getId() << std::endl
-              << "Nome:\t\t" << getNome() << std::endl
-              << "Classe:\t\t" << getClasse() << std::endl
-              << "Vida:\t\t" << getVida() << "/" << getMaxVida()
-              << std::endl
-              << "Atk:\t\t" << letraNoDano(getAtk()) << std::endl
-              << "Def:\t\t" << getDef() << std::endl;
-  }
-  // dano efetuado, vida restante, numero de rounds, atksespeciais
-  void estatisticas()
-  {
-    std::cout << "------------------------------------" << std::endl
-              << "Id: \t\t\t" << getId() << std::endl
-              << "Nome:\t\t\t" << getNome() << std::endl
-              << "Classe:\t\t\t" << getClasse() << std::endl
-              << "Vida Restante:\t\t" << getVida() << " de " << getMaxVida()
-              << std::endl
-              << "Turnos jogados:\t\t" << getQntTurno() << std::endl
-              << "Ataque Especial:\t" << getAtkEsp() << std::endl
-              << "Vezes Usado:\t\t" << getQntEsp() << std::endl
-              << "Dano Total:\t\t" << letraNoDano(getDanoEfetuado())
-              << std::endl
-              << "------------------------------------" << std::endl;
-  }
-  Personagem(int id, std::string nomePadrao, double vida, double atk,
-             double def)
-  {
-    setId(id);
-    setNome(nomePadrao);
-    setAtkEsp("Critico");
-    setMaxVida(vida);
-    setVida(vida);
-    setAtk(atk);
-    setDef(def);
-    zerarEfeitos();
-    // mostrar();
-  }
-  Personagem() {}
+    // dano efetuado, vida restante, numero de rounds, atksespeciais
+    void estatisticas()
+    {
+        std::cout << "------------------------------------" << std::endl
+            << "Id: \t\t\t" << getId() << std::endl
+            << "Nome:\t\t\t" << getNome() << std::endl
+            << "Classe:\t\t\t" << getClasse() << std::endl
+            << "Vida Restante:\t\t" << getVida() << " de " << getMaxVida()
+            << std::endl
+            << "Turnos jogados:\t\t" << getQntTurno() << std::endl
+            << "Ataque Especial:\t" << getAtkEsp() << std::endl
+            << "Vezes Usado:\t\t" << getQntEsp() << std::endl
+            << "Dano Total:\t\t" << letraNoDano(getDanoEfetuado())
+            << std::endl
+            << "------------------------------------" << std::endl;
+    }
+    Personagem(int id, std::string nomePadrao, double vida, double atk,
+        double def)
+    {
+        setId(id);
+        setNome(nomePadrao);
+        setAtkEsp("Critico");
+        setMaxVida(vida);
+        setVida(vida);
+        setAtk(atk);
+        setDef(def);
+        zerarEfeitos();
+        // mostrar();
+    }
+    Personagem() {}
 };
 
 class Arcanista : public Personagem
 {
 private:
-  double magia;
+    double magia;
 
 public:
-  double getMagia() { return this->magia; }
-  void setMagia(double magia) { this->magia = magia; }
-  double getAtaqueEspecial(Personagem *oponente, int dado) override
-  {
-    std::cout << "Dado: " << dado << std::endl
-              << getAtkEsp() << ": " << this->getMagia() << std::endl;
-    return this->getMagia();
-  }
-  void mostrar()
-  {
-    Personagem::mostrar();
-    std::cout << "Magia:\t\t" << this->getMagia() << std::endl
-              << "------------------------------------" << std::endl;
-  }
-  Arcanista(int id, std::string nomePadrao, double vida, double atk,
-            double def, double magia)
-  {
-    setClasse("Arcanista");
-    setAtkEsp("Bola De Fogo!");
-    setId(id);
-    setNome(nomePadrao);
-    setMaxVida(50 + vida + (double)(rand() % 20));
-    setVida(getMaxVida());
-    setAtk(20 + atk + (double)(rand() % 20));
-    setDef(20 + def + (double)(rand() % 20));
-    setMagia(20 + magia + (double)(rand() % 100));
-    zerarEfeitos();
-  }
+    double getMagia() { return this->magia; }
+    void setMagia(double magia) { this->magia = magia; }
+    double getAtaqueEspecial(Personagem* oponente, int dado) override
+    {
+        std::cout << "Dado: " << dado << std::endl
+            << getAtkEsp() << ": " << this->getMagia() << std::endl;
+        return this->getMagia();
+    }
+    void mostrar()
+    {
+        Personagem::mostrar();
+        std::cout << "Magia:\t\t" << this->getMagia() << std::endl
+            << "------------------------------------" << std::endl;
+    }
+    Arcanista(int id, std::string nomePadrao, double vida, double atk,
+        double def, double magia)
+    {
+        setClasse("Arcanista");
+        setAtkEsp("Bola De Fogo!");
+        setId(id);
+        setNome(nomePadrao);
+        setMaxVida(50 + vida + (double)(rand() % 20));
+        setVida(getMaxVida());
+        setAtk(20 + atk + (double)(rand() % 20));
+        setDef(20 + def + (double)(rand() % 20));
+        setMagia(20 + magia + (double)(rand() % 100));
+        zerarEfeitos();
+    }
 };
 class Monge : public Personagem
 {
 private:
-  double fe;
+    double fe;
 
 public:
-  double getFe() { return this->fe; }
-  void setFe(double fe) { this->fe = fe; }
+    double getFe() { return this->fe; }
+    void setFe(double fe) { this->fe = fe; }
 
-  double getAtaqueEspecial(Personagem *oponente, int dado) override
-  {
-    std::cout << "Dado: " << dado << std::endl
-              << getAtkEsp() << ": " << this->getFe() << std::endl;
-    setVida(getVida() + getFe());
-    return 0;
-  }
-  void mostrar()
-  {
-    Personagem::mostrar();
-    std::cout << "Fe:\t\t" << this->getFe() << std::endl
-              << "------------------------------------" << std::endl;
-  }
-  Monge(int id, std::string nomePadrao, double vida, double atk, double def,
+    double getAtaqueEspecial(Personagem* oponente, int dado) override
+    {
+        std::cout << "Dado: " << dado << std::endl
+            << getAtkEsp() << ": " << this->getFe() << std::endl;
+        setVida(getVida() + getFe());
+        return 0;
+    }
+    void mostrar()
+    {
+        Personagem::mostrar();
+        std::cout << "Fe:\t\t" << this->getFe() << std::endl
+            << "------------------------------------" << std::endl;
+    }
+    Monge(int id, std::string nomePadrao, double vida, double atk, double def,
         double fe)
-  {
-    setClasse("Monge");
-    this->setAtkEsp("Cura Divina!");
-    setId(id);
-    setNome(nomePadrao);
-    setMaxVida(200 + vida + (double)(rand() % 10));
-    setVida(getMaxVida());
-    setAtk(50 + atk + (double)(rand() % 20));
-    setDef(50 + def + (double)(rand() % 20));
-    setFe(0 + fe + (double)(rand() % 2));
-    zerarEfeitos();
-  }
+    {
+        setClasse("Monge");
+        this->setAtkEsp("Cura Divina!");
+        setId(id);
+        setNome(nomePadrao);
+        setMaxVida(200 + vida + (double)(rand() % 10));
+        setVida(getMaxVida());
+        setAtk(50 + atk + (double)(rand() % 20));
+        setDef(50 + def + (double)(rand() % 20));
+        setFe(0 + fe + (double)(rand() % 2));
+        zerarEfeitos();
+    }
 };
 class Assassino : public Personagem
 {
 private:
-  double penetracao;
+    double penetracao;
 
 public:
-  double getPenetracao() { return this->penetracao; }
-  void setPenetracao(double penetracao) { this->penetracao = penetracao; }
+    double getPenetracao() { return this->penetracao; }
+    void setPenetracao(double penetracao) { this->penetracao = penetracao; }
 
-  double getAtaqueEspecial(Personagem *oponente, int dado) override
-  {
-    std::cout << "Dado: " << dado << std::endl
-              << this->getAtkEsp() << ": " << this->getPenetracao()
-              << std::endl;
-    oponente->adicionaEfeito(sangramento, 3);
-    return this->getAtk() - (oponente->getDef() - this->getPenetracao());
-  }
-  void mostrar()
-  {
-    Personagem::mostrar();
-    std::cout << "Penetracao:\t" << this->getPenetracao() << std::endl
-              << "------------------------------------" << std::endl;
-  }
-  Assassino(int id, std::string nomePadrao, double vida, double atk, double def, double chanceCritica)
-  {
-    setClasse("Assassino");
-    this->setAtkEsp("Sangre!");
-    setId(id);
-    setNome(nomePadrao);
-    setMaxVida(100 + vida + (double)(rand() % 10));
-    setVida(getMaxVida());
-    setAtk(70 + atk + (double)(rand() % 30));
-    setDef(20 + def + (double)(rand() % 10));
-    setPenetracao(20 + chanceCritica + (double)(rand() % 20));
-    zerarEfeitos();
-  }
+    double getAtaqueEspecial(Personagem* oponente, int dado) override
+    {
+        std::cout << "Dado: " << dado << std::endl
+            << this->getAtkEsp() << ": " << this->getPenetracao()
+            << std::endl;
+        oponente->adicionaEfeito(sangramento, 3);
+        return this->getAtk() - (oponente->getDef() - this->getPenetracao());
+    }
+    void mostrar()
+    {
+        Personagem::mostrar();
+        std::cout << "Penetracao:\t" << this->getPenetracao() << std::endl
+            << "------------------------------------" << std::endl;
+    }
+    Assassino(int id, std::string nomePadrao, double vida, double atk, double def, double chanceCritica)
+    {
+        setClasse("Assassino");
+        this->setAtkEsp("Sangre!");
+        setId(id);
+        setNome(nomePadrao);
+        setMaxVida(100 + vida + (double)(rand() % 10));
+        setVida(getMaxVida());
+        setAtk(70 + atk + (double)(rand() % 30));
+        setDef(20 + def + (double)(rand() % 10));
+        setPenetracao(20 + chanceCritica + (double)(rand() % 20));
+        zerarEfeitos();
+    }
+};
+class Guerreiro : public Personagem
+{
+private:
+    double armadura;
+
+public:
+    double getArmadura() { return this->armadura; }
+    void setArmadura(double penetracao) { this->armadura= armadura; }
+
+    double getAtaqueEspecial(Personagem* oponente, int dado) override
+    {
+        std::cout << "Dado: " << dado << std::endl
+            << this->getAtkEsp() << ": " << this->getArmadura()
+            << std::endl;
+        oponente->adicionaEfeito(sangramento, 3);
+        return this->getAtk() - (oponente->getDef() - this->getArmadura());
+    }
+    void mostrar()
+    {
+        Personagem::mostrar();
+        std::cout << "Armadura:\t" << this->getArmadura() << std::endl
+            << "------------------------------------" << std::endl;
+    }
+    Guerreiro(int id, std::string nomePadrao, double vida, double atk, double def, double armadura)
+    {
+        setClasse("Guerreiro");
+        this->setAtkEsp("Vamos para a batalha!");
+        setId(id);
+        setNome(nomePadrao);
+        setMaxVida(100 + vida + (double)(rand() % 10));
+        setVida(getMaxVida());
+        setAtk(70 + atk + (double)(rand() % 30));
+        setDef(20 + def + (double)(rand() % 10));
+        setArmadura(20 + armadura + (double)(rand() % 20));
+        zerarEfeitos();
+    }
 };
 enum estado
 {
-  perdeu = -1,
-  lutando = 0,
-  vencendo = 1
+    perdeu = -1,
+    lutando = 0,
+    vencendo = 1
 };
 class Torneio
 {
 private:
-  Personagem *personagensDoTorneio[tamanhoDoTorneio] = {nullptr};
-  int vencedores[tamanhoDoTorneio] = {0};
-  int qntPersonagensDerrotados = 0;
-  int histId[MAXPRS] = {0};
-  bool resumida;
+    Personagem* personagensDoTorneio[tamanhoDoTorneio] = { nullptr };
+    int vencedores[tamanhoDoTorneio] = { 0 };
+    int qntPersonagensDerrotados = 0;
+    int histId[MAXPRS] = { 0 };
+    int indexPers = 0;
+    bool resumida;
 
 public:
-  void donoDoturnoDestacado(Personagem *dono, Personagem *sub)
-  {
-    std::cout << "\033[1;29m-> " << dono->getNome()
-              << " esta atacando...\033[0m\t" << std::endl;
-    std::cout << "\033[1;30m-> " << sub->getNome()
-              << " esta esperando...\033[0m\t" << std::endl;
-  }
-  int declaraVitoria(Personagem *vencedor, Personagem *p2)
-  {
-    vencedor->setDerrotados(p2);
-    vencedores[histId[vencedor->getId()]] = vencendo;
-    vencedor->fullHeal();
-    vencedor->zerarEfeitos();
-    vencedores[histId[p2->getId()]] = perdeu;
-    qntPersonagensDerrotados += 1;
-    return histId[vencedor->getId()];
-  }
-  int verificaVitoria(Personagem *p1, Personagem *p2, int turnoAtual)
-  {
-    if (p2->getVida() <= 0 ||
-        (turnoAtual >= 10 &&
-         p1->getDanoEfetuado() > p2->getDanoEfetuado()))
+    void donoDoturnoDestacado(Personagem* dono, Personagem* sub)
     {
-      std::cout << "\n\033[3;33m" << p1->getNome()
+        std::cout << "\033[1;29m-> " << dono->getNome()
+            << " esta atacando...\033[0m\t" << std::endl;
+        std::cout << "\033[1;30m-> " << sub->getNome()
+            << " esta esperando...\033[0m\t" << std::endl;
+    }
+    void resetaVencedor(Personagem *vencedor) {
+        vencedor->fullHeal();
+        vencedor->zerarEfeitos();
+    }
+    int declaraVitoria(Personagem* vencedor, Personagem* p2)
+    {
+        vencedor->setDerrotados(p2);
+        vencedores[histId[vencedor->getId()]] = vencendo;
+        vencedores[histId[p2->getId()]] = perdeu;
+        qntPersonagensDerrotados += 1;
+        return histId[vencedor->getId()];
+    }
+    int verificaVitoria(Personagem* p1, Personagem* p2, int turnoAtual)
+    {
+        if (p2->getVida() <= 0 ||
+            (turnoAtual >= 10 &&
+                p1->getDanoEfetuado() > p2->getDanoEfetuado()))
+        {
+            std::cout << "\n\033[3;33m" << p1->getNome()
                 << " Ganhou a Batalha\033[0m!" << std::endl;
-      return declaraVitoria(p1, p2);
-      ;
-    }
-    else if (p1->getVida() <= 0 ||
-             (turnoAtual >= 10 &&
-              p2->getDanoEfetuado() > p1->getDanoEfetuado()))
-    {
-      std::cout << "\n\033[3;33m" << p2->getNome()
+            return declaraVitoria(p1, p2);
+            ;
+        }
+        else if (p1->getVida() <= 0 ||
+            (turnoAtual >= 10 &&
+                p2->getDanoEfetuado() > p1->getDanoEfetuado()))
+        {
+            std::cout << "\n\033[3;33m" << p2->getNome()
                 << " Ganhou a Batalha\033[0m!" << std::endl;
-      return declaraVitoria(p2, p1);
+            return declaraVitoria(p2, p1);
+        }
+        else if (turnoAtual >= 10 &&
+            p1->getDanoEfetuado() == p2->getDanoEfetuado()){
+            std::cout << "\n\033[3;33m" << p1->getNome() << " e " << p2->getNome()
+                << " Empataram\033[0m!" << p1->getNome() << " Continuara.." << std::endl;
+            return declaraVitoria(p1, p2);
+        }
+        return -1;
     }
-    return -1;
-  }
-  void turno(Personagem *atacante, Personagem *defensor)
-  {
-    std::string cor = (atacante->getId() % 2 == 0) ? "\033[1;33m" : "\033[1;27m";
-    double danoDoTurno = atacante->DaDano(defensor);
-
-    if (danoDoTurno < 0)
+    void turno(Personagem* atacante, Personagem* defensor)
     {
-      danoDoTurno = 0;
+        std::string cor = (atacante->getId() % 2 == 0) ? "\033[1;33m" : "\033[1;27m";
+        double danoDoTurno = atacante->DaDano(defensor);
+
+        if (danoDoTurno < 0)
+        {
+            danoDoTurno = 0;
+        }
+
+        std::cout << "Nome = " << atacante->getNome()
+            << " | Id = " << atacante->getId() << " | Estado = "
+            << vencedores[atacante->getId()] << std::endl;
+
+        std::cout << cor << atacante->getNome() << " deu \033[0m\033[1;31m"
+            << danoDoTurno << "\033[0m" << cor << " de dano! \033[0m\n"
+            << std::endl;
+
+        defensor->setVida(defensor->getVida() - danoDoTurno);
+        atacante->VeAVida();
+        defensor->VeAVida();
     }
-
-    std::cout << "Nome = " << atacante->getNome()
-              << " | Id = " << atacante->getId() << " | Estado = "
-              << vencedores[atacante->getId()] << std::endl;
-
-    std::cout << cor << atacante->getNome() << " deu \033[0m\033[1;31m"
-              << danoDoTurno << "\033[0m" << cor << " de dano! \033[0m\n"
-              << std::endl;
-
-    defensor->setVida(defensor->getVida() - danoDoTurno);
-    atacante->VeAVida();
-    defensor->VeAVida();
-  }
-  int luta(Personagem *p1, Personagem *p2)
-  {
-    int numeroTurno = 0;
-    int idVencedor = -1;
-
-    while (p1->getVida() > 0 && p2->getVida() > 0)
+    int luta(Personagem* p1, Personagem* p2)
     {
-      // Turnos
-      std::cout << std::endl
+        int numeroTurno = 0;
+        int idVencedor = -1;
+        int danoGuardado1 = p1->getDanoEfetuado();
+        int danoGuardado2 = p2->getDanoEfetuado();
+        p1->setDanoEfetuado(0);
+        p2->setDanoEfetuado(0);
+        while (p1->getVida() > 0 && p2->getVida() > 0)
+        {
+            // Turnos
+            std::cout << std::endl
                 << "\033[1;34m-> Turno " << numeroTurno + 1 << "\033[0m\t"
                 << std::endl;
-      if (numeroTurno % 2 == 0)
-      {
-        donoDoturnoDestacado(p1, p2);
-        // Tuno P-1
-        if (!resumida)
-        {
-          p1->mostrar();
-          p2->mostrar();
-          turno(p1, p2);
-          getchar();
-          // system("cls");
-        }
-        else
-        {
-          turno(p1, p2);
-        }
-      }
-      else
-      {
-        // Turno P-2
-        donoDoturnoDestacado(p2, p1);
-        if (!resumida)
-        {
-          p1->mostrar();
-          p2->mostrar();
-          turno(p2, p1);
-          getchar();
-          // system("cls");
-        }
-        else
-        {
-          turno(p2, p1);
-        }
-      }
-      numeroTurno++;
-      if ((idVencedor = verificaVitoria(p1, p2, numeroTurno)) != -1)
-      {
-        break;
-      }
-    }
-
-    p1->mostrar();
-    p2->mostrar();
-    getchar();
-    // system("clear");
-    return idVencedor;
-  }
-  void inicia()
-  {
-    int ultimoPers = 0;
-    int idVencedor = -1;
-    bool GuardaUm = false;
-    for (int i = 0; i < tamanhoDoTorneio; i++)
-    {
-      vencedores[i] = lutando; // 0 = lutando
-    }
-    do
-    {
-      int id = 0;
-      for (id = 0; id < tamanhoDoTorneio; id++)
-      {
-        if (personagensDoTorneio[id])
-        {
-          if (vencedores[id] != perdeu)
-          {
-            if (GuardaUm)
+            if (numeroTurno % 2 == 0)
             {
-              idVencedor = luta(personagensDoTorneio[id],
-                                personagensDoTorneio[ultimoPers]);
-              GuardaUm = false;
+                donoDoturnoDestacado(p1, p2);
+                // Tuno P-1
+                if (!resumida)
+                {
+                    p1->mostrar();
+                    p2->mostrar();
+                    turno(p1, p2);
+                    getchar();
+                    // system("cls");
+                }
+                else
+                {
+                    turno(p1, p2);
+                }
             }
-            else if (!GuardaUm)
+            else
             {
-              ultimoPers = id;
-              GuardaUm = true;
+                // Turno P-2
+                donoDoturnoDestacado(p2, p1);
+                if (!resumida)
+                {
+                    p1->mostrar();
+                    p2->mostrar();
+                    turno(p2, p1);
+                    getchar();
+                    // system("cls");
+                }
+                else
+                {
+                    turno(p2, p1);
+                }
             }
-          }
+            numeroTurno++;
+            if ((idVencedor = verificaVitoria(p1, p2, numeroTurno)) != -1)
+            {
+                break;
+            }
         }
-      }
-    } while (veSeTem(2, vencedores, (sizeof(vencedores) / sizeof(vencedores[0])), vencendo));
 
-    for (int id = 0; id < tamanhoDoTorneio; id++)
-    {
-      if (id == idVencedor)
-      {
-        std::cout << "===================================" << std::endl
-                  << "------------VENCEDOR---------------" << std::endl
-                  << "-----------DO-TORNEIO--------------" << std::endl
-                  << "-----------------------------------" << std::endl
-                  << "->" << std::endl
-                  << "->" << personagensDoTorneio[id]->getNome() << std::endl
-                  << "->" << std::endl
-                  << "-----------------------------------" << std::endl
-                  << "===================================" << std::endl;
+        p1->mostrar();
+        p2->mostrar();
+        p1->setDanoEfetuado(danoGuardado1 + p1->getDanoEfetuado());
+        p2->setDanoEfetuado(danoGuardado2 + p2->getDanoEfetuado());
+        
+        if (p1->getId() == idVencedor) {
+            resetaVencedor(p1);
+        }
+        else if (p2->getId() == idVencedor) {
+            resetaVencedor(p2);
+           }
         getchar();
-        break;
-      }
+        // system("clear");
+        return idVencedor;
     }
-  }
-  void distribuiPersonagens(Personagem *todosOsPers[])
-  {
-    int idNovo = 0;
-    int idAntigo = 0;
-    bool podeAdicionar = true;
-    bool diminui = true;
-    int histTemp[tamanhoDoTorneio] = {-1};
-    while (idNovo < tamanhoDoTorneio)
+    void inicia()
     {
-      if (todosOsPers[idNovo])
-      {
-        if (podeAdicionar)
+        int ultimoPers = 0;
+        int idVencedor = -1;
+        bool GuardaUm = false;
+        for (int i = 0; i < tamanhoDoTorneio; i++)
         {
-          idAntigo = (rand() % tamanhoDoTorneio);
+            vencedores[i] = lutando; // 0 = lutando
         }
-        for (int a = 0; a <= idNovo; a++)
+        do
         {
-          if (idAntigo == histTemp[a])
-          {
-            if (diminui)
+            int id = 0;
+            for (id = 0; id < tamanhoDoTorneio; id++)
             {
-              idAntigo--;
-              if (idAntigo < 0)
-              {
-                diminui = false;
-              }
-              break;
+                if (personagensDoTorneio[id])
+                {
+                    if (vencedores[id] != perdeu)
+                    {
+                        if (GuardaUm)
+                        {
+                            idVencedor = luta(personagensDoTorneio[id],
+                                personagensDoTorneio[ultimoPers]);
+                            GuardaUm = false;
+                        }
+                        else if (!GuardaUm)
+                        {
+                            ultimoPers = id;
+                            GuardaUm = true;
+                        }
+                    }
+                }
             }
-            else if (!diminui)
-            {
-              idAntigo++;
-              break;
-            }
-            std::cout << idAntigo << std::endl;
-            if (idAntigo >= tamanhoDoTorneio)
-            {
-              podeAdicionar = true;
-            }
-            podeAdicionar = false;
-            break;
-          }
-        }
-        if (podeAdicionar)
+        } while (veSeTem(2, vencedores, (sizeof(vencedores) / sizeof(vencedores[0])), vencendo));
+
+        for (int id = 0; id < tamanhoDoTorneio; id++)
         {
-          this->personagensDoTorneio[idNovo] = todosOsPers[idAntigo];
-          std::cout << idAntigo << std::endl;
-          histTemp[idNovo] = idAntigo;
-          histId[idAntigo] = idNovo;
-          idNovo++;
+            if (id == idVencedor)
+            {
+                std::cout << "===================================" << std::endl
+                    << "------------VENCEDOR---------------" << std::endl
+                    << "-----------DO-TORNEIO--------------" << std::endl
+                    << "-----------------------------------" << std::endl
+                    << "->" << std::endl
+                    << "->" << personagensDoTorneio[id]->getNome() << std::endl
+                    << "->" << std::endl
+                    << "-----------------------------------" << std::endl
+                    << "===================================" << std::endl;
+                getchar();
+                break;
+            }
         }
-        podeAdicionar = true;
-      }
     }
-    // for (int i = 0; i < tamanhoDoTorneio; i++)
-    // {
-    //   this->personagensDoTorneio[i] = todosOsPers[i];
-    // }
-  }
-  Torneio(Personagem *todosOsPers[], bool resumida)
-  {
-    this->resumida = resumida;
-    this->distribuiPersonagens(todosOsPers);
-    this->inicia();
-  }
+    void distribuiPersonagens(Personagem* todosOsPers[])
+    {
+        int idNovo = 0;
+        int idAntigo = 0;
+        bool podeAdicionar = true;
+        bool diminui = true;
+        int histTemp[tamanhoDoTorneio] = { -1 };
+        while (idNovo < tamanhoDoTorneio)
+        {
+            if (todosOsPers[idNovo])
+            {
+                if (podeAdicionar)
+                {
+                    idAntigo = (rand() % tamanhoDoTorneio);
+                }
+                for (int a = 0; a <= idNovo; a++)
+                {
+                    if (idAntigo == histTemp[a])
+                    {
+                        if (diminui)
+                        {
+                            idAntigo--;
+                            if (idAntigo < 0)
+                            {
+                                diminui = false;
+                            }
+                            break;
+                        }
+                        else if (!diminui)
+                        {
+                            idAntigo++;
+                            break;
+                        }
+                        std::cout << idAntigo << std::endl;
+                        if (idAntigo >= tamanhoDoTorneio)
+                        {
+                            podeAdicionar = true;
+                        }
+                        podeAdicionar = false;
+                        break;
+                    }
+                }
+                if (podeAdicionar)
+                {
+                    this->personagensDoTorneio[idNovo] = todosOsPers[idAntigo];
+                    histTemp[idNovo] = idAntigo;
+                    histId[idAntigo] = idNovo;
+                    idNovo++;
+                }
+                podeAdicionar = true;
+            }
+
+        }
+        std::cout << std::endl << "Ordem dos Persongens no torneio: " << std::endl;
+         for (int i = 0; i < (sizeof(histId) / sizeof(histId[0])); i++)
+         {
+             std::cout << histTemp[histId[i]] << ". " << personagensDoTorneio[i]->getNome() << std::endl;
+         }
+         getchar();
+    }
+    Torneio(Personagem* todosOsPers[], bool resumida, int index)
+    {
+        this->indexPers = index;
+        this->resumida = resumida;
+        this->distribuiPersonagens(todosOsPers);
+        this->inicia();
+    }
 };
 
 enum classe
 {
-  padrao = 0,
-  arcanista = 1,
-  monge = 2,
-  assassino = 3
+    padrao = 0,
+    arcanista = 1,
+    monge = 2,
+    assassino = 3
 };
 class JogoRpg
 {
 private:
-  Personagem *pQ[MAXPRS]{nullptr};
-  int indexPers = 0;
+    Personagem* pQ[MAXPRS]{ nullptr };
+    int indexPers = 0;
 
 public:
-  Personagem *getPers(int i) { return pQ[i]; }
-  void adicionaPers(int qnt, std::string nomePadrao, double vida, double atk, double def, double atkEsp, int c)
-  {
-    for (int i = 0; i < qnt; i++)
+    Personagem* getPers(int i) { return pQ[i]; }
+    void adicionaPers(int qnt, std::string nomePadrao, double vida, double atk, double def, double atkEsp, int c)
     {
-      std::string nomeSubstituto = nomePadrao;
-      nomeSubstituto += " " + toString(i);
-      switch (c)
-      {
-      case padrao:
-        pQ[this->indexPers] = new Personagem(indexPers, nomeSubstituto, vida, atk, def);
-        break;
-      case arcanista:
-        pQ[this->indexPers] = new Arcanista(indexPers, nomeSubstituto, vida, atk, def, atkEsp);
-        break;
-      case monge:
-        pQ[this->indexPers] = new Monge(indexPers, nomeSubstituto, vida, atk, def, atkEsp);
-        break;
-      case assassino:
-        pQ[this->indexPers] = new Assassino(indexPers, nomeSubstituto, vida, atk, def, atkEsp);
-        break;
-      }
-      this->indexPers++;
-    }
-  }
-  void adicionaPers(int qnt, std::string nomePadrao)
-  {
-    for (int i = 0; i < qnt; i++)
-    {
-      std::string nomeSubstituto = nomePadrao;
-      if (i != 0)
-        nomeSubstituto += " " + toString(i);
-      switch (rand() % totalDeClasse)
-      {
-      case arcanista: // Classe(id,nome,vida,ataque,defesa,atributoEspecial)
-        pQ[this->indexPers] = new Arcanista(indexPers, nomeSubstituto,
-                                            (double)(rand() % 30), (double)(rand() % 30),
-                                            (double)(rand() % 30), (double)(rand() % 30));
-        break;
-      case monge:
-        pQ[this->indexPers] = new Monge(indexPers, nomeSubstituto,
-                                        (double)(rand() % 30), (double)(rand() % 30),
-                                        (double)(rand() % 30), (double)(rand() % 30));
-        break;
-      case assassino:
-        pQ[this->indexPers] = new Assassino(indexPers, nomeSubstituto,
-                                            (double)(rand() % 30), (double)(rand() % 30),
-                                            (double)(rand() % 30), (double)(rand() % 30));
-        break;
-      }
-      this->indexPers++;
-    }
-  }
-  void adicionaPers(int qnt, std::string nomePadrao, int c)
-  {
-    for (int i = 0; i < qnt; i++)
-    {
-      std::string nomeSubstituto = nomePadrao;
-      if (i != 0)
-        nomeSubstituto += " " + toString(i);
-      switch (c)
-      {
-      case arcanista: // Classe(id,nome,vida,ataque,defesa,atributoEspecial)
-        pQ[this->indexPers] =
-            new Arcanista(indexPers, nomeSubstituto,
-                          (double)(rand() % 30), (double)(rand() % 30),
-                          (double)(rand() % 30), (double)(rand() % 30));
-        break;
-      case monge:
-        pQ[this->indexPers] =
-            new Monge(indexPers, nomeSubstituto,
-                      (double)(rand() % 30), (double)(rand() % 30),
-                      (double)(rand() % 30), (double)(rand() % 30));
-        break;
-      case assassino:
-        pQ[this->indexPers] =
-            new Assassino(indexPers, nomeSubstituto,
-                          (double)(rand() % 30), (double)(rand() % 30),
-                          (double)(rand() % 30), (double)(rand() % 30));
-        break;
-      }
-      this->indexPers++;
-    }
-  }
-  void mostraPers()
-  {
-    int i = 0;
-    while (pQ[i] != nullptr)
-    {
-      pQ[i]->mostrar();
-      i++;
-    }
-  }
-  void mostraNomes()
-  {
-    int i = 0;
-    while (pQ[i] != nullptr)
-    {
-      std::cout << pQ[i]->getId() << ". " << pQ[i]->getNome() << std::endl;
-      i++;
-    }
-  }
-
-  void mostraDerrotados()
-  {
-    int i = 0, posicao = 0;
-    while (pQ[i] != nullptr)
-    {
-      if (pQ[i]->getDerrotados(0) != nullptr)
-      {
-        std::cout << pQ[i]->getNome() << "\033[1;31m Derrotou: \033[0m"
-                  << std::endl;
-        while (posicao >= 0 && posicao < pQ[i]->getIndexDerrotados() &&
-               pQ[i]->getDerrotados(posicao) != nullptr)
+        for (int i = 0; i < qnt; i++)
         {
-          std::cout << pQ[i]->getDerrotados(posicao)->getNome()
+            std::string nomeSubstituto = nomePadrao;
+            if (i != 0)
+                nomeSubstituto += " " + toString(i);
+            switch (c)
+            {
+            case arcanista:
+                pQ[this->indexPers] = new Arcanista(indexPers, nomeSubstituto, vida, atk, def, atkEsp);
+                break;
+            case monge:
+                pQ[this->indexPers] = new Monge(indexPers, nomeSubstituto, vida, atk, def, atkEsp);
+                break;
+            case assassino:
+                pQ[this->indexPers] = new Assassino(indexPers, nomeSubstituto, vida, atk, def, atkEsp);
+                break;
+            default:
+                pQ[this->indexPers] = new Personagem(indexPers, nomeSubstituto, vida, atk, def);
+                break;
+            }
+            this->indexPers++;
+        }
+    }
+    void adicionaPers(int qnt, std::string nomePadrao)
+    {
+        for (int i = 0; i < qnt; i++)
+        {
+            std::string nomeSubstituto = nomePadrao;
+            if (i != 0)
+                nomeSubstituto += " " + toString(i);
+            switch (rand() % totalDeClasse)
+            {
+            case arcanista: // Classe(id,nome,vida,ataque,defesa,atributoEspecial)
+                pQ[this->indexPers] = new Arcanista(indexPers, nomeSubstituto,
+                    (double)(rand() % 30), (double)(rand() % 30),
+                    (double)(rand() % 30), (double)(rand() % 30));
+                break;
+            case monge:
+                pQ[this->indexPers] = new Monge(indexPers, nomeSubstituto,
+                    (double)(rand() % 30), (double)(rand() % 30),
+                    (double)(rand() % 30), (double)(rand() % 30));
+                break;
+            case assassino:
+                pQ[this->indexPers] = new Assassino(indexPers, nomeSubstituto,
+                    (double)(rand() % 30), (double)(rand() % 30),
+                    (double)(rand() % 30), (double)(rand() % 30));
+                break;
+            default:
+                pQ[this->indexPers] = new Personagem(indexPers, nomeSubstituto,
+                    (double)(rand() % 30), (double)(rand() % 30),
+                    (double)(rand() % 30));
+                break;
+            }
+            this->indexPers++;
+        }
+    }
+    void adicionaPers(int qnt, std::string nomePadrao, int c)
+    {
+        for (int i = 0; i < qnt; i++)
+        {
+            std::string nomeSubstituto = nomePadrao;
+            if (i != 0)
+                nomeSubstituto += " " + toString(i);
+            switch (c)
+            {
+            case arcanista: // Classe(id,nome,vida,ataque,defesa,atributoEspecial)
+                pQ[this->indexPers] =
+                    new Arcanista(indexPers, nomeSubstituto,
+                        (double)(rand() % 30), (double)(rand() % 30),
+                        (double)(rand() % 30), (double)(rand() % 30));
+                break;
+            case monge:
+                pQ[this->indexPers] =
+                    new Monge(indexPers, nomeSubstituto,
+                        (double)(rand() % 30), (double)(rand() % 30),
+                        (double)(rand() % 30), (double)(rand() % 30));
+                break;
+            case assassino:
+                pQ[this->indexPers] =
+                    new Assassino(indexPers, nomeSubstituto,
+                        (double)(rand() % 30), (double)(rand() % 30),
+                        (double)(rand() % 30), (double)(rand() % 30));
+                break;
+            default:
+                pQ[this->indexPers] =
+                    new Personagem(indexPers, nomeSubstituto,
+                    (double)(rand() % 30), (double)(rand() % 30),
+                    (double)(rand() % 30));
+                break;
+            }
+            this->indexPers++;
+        }
+    }
+    void mostraPers()
+    {
+        int i = 0;
+        while (pQ[i] != nullptr)
+        {
+            pQ[i]->mostrar();
+            i++;
+        }
+    }
+    void mostraNomes()
+    {
+        int i = 0;
+        while (pQ[i] != nullptr)
+        {
+            std::cout << pQ[i]->getId() << ". " << pQ[i]->getNome() << std::endl;
+            i++;
+        }
+    }
+
+    void mostraDerrotados()
+    {
+        int i = 0, posicao = 0;
+        while (pQ[i] != nullptr)
+        {
+            if (pQ[i]->getDerrotados(0) != nullptr)
+            {
+                std::cout << pQ[i]->getNome() << "\033[1;31m Derrotou: \033[0m"
                     << std::endl;
-          posicao++;
+                while (posicao >= 0 && posicao < pQ[i]->getIndexDerrotados() &&
+                    pQ[i]->getDerrotados(posicao) != nullptr)
+                {
+                    std::cout << pQ[i]->getDerrotados(posicao)->getNome()
+                        << std::endl;
+                    posicao++;
+                }
+                std::cout << std::endl;
+                posicao = 0;
+            }
+            i++;
         }
-        std::cout << std::endl;
-        posicao = 0;
-      }
-      i++;
     }
-  }
-  void mostraEstatistica()
-  {
-    int i = 0;
-    while (pQ[i] != nullptr)
+    void mostraEstatistica()
     {
-      pQ[i]->estatisticas();
-      i++;
+        int i = 0;
+        while (pQ[i] != nullptr)
+        {
+            pQ[i]->estatisticas();
+            i++;
+        }
     }
-  }
-  void iniciaTorneio(bool resumida)
-  {
-    Torneio t = Torneio(pQ, resumida);
-  }
-  void deletaPersonagem(int id)
-  {
-      for (int a = 0; a < pQ[id]->getIndexDerrotados(); a++)
-      {
-        delete (pQ[id]->getDerrotados(a));
-      }
-      delete (pQ[id]);
-      for (int a = id; a < indexPers - 1; a++){
-        pQ[a] = pQ[a++];
-        pQ[a]->setId(pQ[a++]->getId());
-      }
-      indexPers--;
-  }
-  void deletaPonteiros()
-  {
-    for (int i = 0; i < indexPers; i++)
+    void iniciaTorneio(bool resumida)
     {
-      for (int a = 0; a < pQ[i]->getIndexDerrotados(); a++)
-      {
-        delete (pQ[i]->getDerrotados(a));
-      }
-      delete (pQ[i]);
+        Torneio t = Torneio(pQ, resumida,indexPers);
     }
-  }
-  void menu()
-  {
-    int entrada;
-    std::string nome = "";
-    int classe = -1;
-    int idDeletar = -1;
-    bool sair = false;
-    while (!sair)
+    void deletaPersonagem(int id)
     {
-    std::cout << "O que quer fazer?" << std::endl;
-    std::cout << "1. Iniciar Torneio " << std::endl;
-    std::cout << "2. Adicionar Personagem" << std::endl;
-    std::cout << "5. Sair" << std::endl;
-      std::cin >> entrada;
+        for (int a = 0; a < pQ[id]->getIndexDerrotados(); a++)
+        {
+            delete (pQ[id]->getDerrotados(a));
+        }
+        delete (pQ[id]);
+        for (int a = id; a < indexPers - 1; a++) {
+            pQ[a] = pQ[a++];
+            pQ[a]->setId(pQ[a++]->getId());
+        }
+        indexPers--;
+    }
+    void deletaPonteiros()
+    {
+        for (int i = 0; i < indexPers; i++)
+        {
+            for (int a = 0; a < pQ[i]->getIndexDerrotados(); a++)
+            {
+                delete (pQ[i]->getDerrotados(a));
+            }
+            delete (pQ[i]);
+        }
+    }
+    void menu()
+    {
+        int entrada;
+        std::string nome = "";
+        int classe = -1;
+        int idDeletar = -1;
+        bool sair = false;
+        while (!sair)
+        {
+            std::cout << "O que quer fazer?" << std::endl;
+            std::cout << "1. Iniciar Torneio " << std::endl;
+            std::cout << "2. Adicionar Personagem" << std::endl;
+            std::cout << "5. Sair" << std::endl;
+            std::cin >> entrada;
 
-      std::cout << std::endl;
-      switch (entrada)
-      {
-      case 1:
-        entrada = -1;
-        while (entrada < 0 || entrada > 1)
-        {
-          std::cout << "Luta resumida ou nao? (0 ou 1)" << std::endl;
-          std::cin >> entrada;
+            std::cout << std::endl;
+            switch (entrada)
+            {
+            case 1:
+                entrada = -1;
+                while (entrada < 0 || entrada > 1)
+                {
+                    std::cout << "Luta resumida ou nao? (0 ou 1)" << std::endl;
+                    std::cin >> entrada;
+                }
+                iniciaTorneio(entrada);
+                break;
+            case 2:
+                std::cout << "Qual o nome?" << std::endl;
+                std::cin >> nome;
+                while (classe < 0 || classe > totalDeClasse)
+                {
+                    std::cout << "Qual a classe?" << std::endl
+                        << "0. Nenhuma" << std::endl
+                        << "1. Arcanista" << std::endl
+                        << "2. Monge" << std::endl
+                        << "3. Assassino " << std::endl;
+                    std::cin >> classe;
+                }
+                adicionaPers(1, nome, classe);
+                std::cout << pQ[indexPers - 1]->getNome() << " Foi adicionado e pode aparecer no torneio!" << std::endl;
+                pQ[indexPers - 1]->mostrar();
+                classe = -1;
+                break;
+            case 5:
+                sair = true;
+                break;
+            default:
+                break;
+            }
         }
-        iniciaTorneio(entrada);
-        break;
-      case 2:
-        std::cout << "Qual o nome?" << std::endl;
-        std::cin >> nome;
-        while (classe < 0 || classe > totalDeClasse)
-        {
-          std::cout << "Qual a classe?" << std::endl
-                    << "0. Nenhuma" << std::endl
-                    << "1. Arcanista" << std::endl
-                    << "2. Monge" << std::endl
-                    << "3. Assassino " << std::endl;
-          std::cin >> classe;
-        }
-        adicionaPers(1, nome, classe);
-        std::cout << pQ[indexPers - 1]->getNome() << " Foi adicionado e pode aparecer no torneio!" << std::endl;
-        pQ[indexPers - 1]->mostrar();
-        break;
-      case 5:
-        sair = true;
-        break;
-      default:
-        break;
-      }
     }
-  }
-  JogoRpg()
-  {
-    // adicionaPers(Quantidade, "Nome", Vida, Ataque, Defesa,AtributoDeClasse,classe)
-    adicionaPers(2, "Blossom", arcanista);
-    adicionaPers(2, "Blubbles", monge);
-    adicionaPers(2, "Buttercup", assassino);
-    adicionaPers(1, "Elemento X", rand() % totalDeClasse);
-    menu();
-    mostraDerrotados();
-    getchar();
-    mostraEstatistica();
-    getchar();
-    mostraPers();
-    deletaPonteiros();
-  }
+    JogoRpg()
+    {
+        // adicionaPers(Quantidade, "Nome", Vida, Ataque, Defesa,AtributoDeClasse,classe)
+        adicionaPers(4, "Blossom", arcanista);
+        adicionaPers(4, "Blubbles", monge);
+        adicionaPers(4, "Buttercup", assassino);
+        adicionaPers(4, "Elemento X", 0);
+        menu();
+        mostraDerrotados();
+        getchar();
+        mostraEstatistica();
+        getchar();
+        mostraPers();
+        deletaPonteiros();
+    }
 };
 
 int main()
 {
-  JogoRpg j = JogoRpg();
+    JogoRpg j = JogoRpg();
 }
