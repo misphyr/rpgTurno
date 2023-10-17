@@ -1,10 +1,4 @@
 //Trabalho de Programação orientada a objeto
-/*
-Integrantes do Grupo
-  Felipe Vieira
-  Rafael Kimura
-  Flávia Mikaella
-*/
 //
 // Obs. O programa deve ser compilado em g++
 //
